@@ -15,37 +15,29 @@ function AddVolunteer() {
 
     const formik = useFormik({
         initialValues: {
-            title: "",
-            location: "",
-            date: "",
-            time: "",
-            briefDescription: "",
-            detailedDescription: ""
+          dateAvailable: '',
+          serviceType: '',
+          comments: '',
+          timeAvailable: '',
+          duration: '',
+          contactInfo: '',
         },
         validationSchema: yup.object({
-            title: yup.string().trim()
-                .min(3, 'Title must be at least 3 characters')
-                .max(100, 'Title must be at most 100 characters')
-                .required('Title is required'),
-            location: yup.string().trim()
-                .min(3, 'Location must be at least 3 characters')
-                .max(100, 'Location must be at most 100 characters')
-                .required('Location is required'),
-            date: yup.date().required('Date is required'),
-            time: yup.string().trim()
-                .required('Time is required'),
-            briefDescription: yup.string().trim()
-                .max(500, 'Brief description must be at most 500 characters'),
-            detailedDescription: yup.string().trim()
-                .max(1000, 'Detailed description must be at most 1000 characters')
+          dateAvailable: yup.date().required('Date Available is required'),
+          serviceType: yup.string().required('Service Type is required'),
+          comments: yup.string().max(500, 'Comments must be at most 500 characters'),
+          timeAvailable: yup.string().matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid Time format').required('Time Available is required'),
+          duration: yup.number().integer().min(0, 'Duration must be at least 0').nullable(),
+          contactInfo: yup.string().max(100, 'Contact Info must be at most 100 characters').nullable(),
         }),
         onSubmit: (data) => {
             if (imageFile) {
                 data.imageFile = imageFile;
             }
-            data.title = data.title.trim();
-            data.briefDescription = data.briefDescription.trim();
-            data.detailedDescription = data.detailedDescription.trim();
+            data.serviceType = data.serviceType.trim();
+            data.comments = data.comments.trim();
+            data.duration = data.duration ? parseInt(data.duration) : null;
+            data.contactInfo = data.contactInfo.trim();
             http.post("/volunteer", data)
                 .then((res) => {
                     console.log(res.data);
@@ -88,72 +80,79 @@ function AddVolunteer() {
                 Add volunteer
             </Typography>
             <Box component="form" onSubmit={formik.handleSubmit}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} md={6} lg={8}>
+            <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
                         <TextField
-                            fullWidth margin="dense" autoComplete="off"
-                            label="Title"
-                            name="title"
-                            value={formik.values.title}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.title && Boolean(formik.errors.title)}
-                            helperText={formik.touched.title && formik.errors.title}
-                        />
-                        <TextField
-                            fullWidth margin="dense" autoComplete="off"
-                            label="Location"
-                            name="location"
-                            value={formik.values.location}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.location && Boolean(formik.errors.location)}
-                            helperText={formik.touched.location && formik.errors.location}
-                        />
-                        <TextField
-                            fullWidth margin="dense" autoComplete="off"
+                            fullWidth
+                            margin="dense"
+                            label="Date Available"
                             type="date"
-                            label="Date"
-                            name="date"
-                            value={formik.values.date}
+                            name="dateAvailable"
+                            value={formik.values.dateAvailable}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.date && Boolean(formik.errors.date)}
-                            helperText={formik.touched.date && formik.errors.date}
+                            error={formik.touched.dateAvailable && Boolean(formik.errors.dateAvailable)}
+                            helperText={formik.touched.dateAvailable && formik.errors.dateAvailable}
                         />
                         <TextField
-                            fullWidth margin="dense" autoComplete="off"
-                            label="Time"
-                            name="time"
-                            type="time" // Change input type to "time"
-                            value={formik.values.time}
+                            fullWidth
+                            margin="dense"
+                            label="Service Type"
+                            name="serviceType"
+                            value={formik.values.serviceType}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.time && Boolean(formik.errors.time)}
-                            helperText={formik.touched.time && formik.errors.time}
-                            inputProps={{ step: 300 }} // Set step to 5 minutes (300 seconds)
+                            error={formik.touched.serviceType && Boolean(formik.errors.serviceType)}
+                            helperText={formik.touched.serviceType && formik.errors.serviceType}
                         />
                         <TextField
-                            fullWidth margin="dense" autoComplete="off"
-                            multiline minRows={2}
-                            label="Brief Description"
-                            name="briefDescription"
-                            value={formik.values.briefDescription}
+                            fullWidth
+                            margin="dense"
+                            multiline
+                            minRows={2}
+                            label="Comments"
+                            name="comments"
+                            value={formik.values.comments}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.briefDescription && Boolean(formik.errors.briefDescription)}
-                            helperText={formik.touched.briefDescription && formik.errors.briefDescription}
+                            error={formik.touched.comments && Boolean(formik.errors.comments)}
+                            helperText={formik.touched.comments && formik.errors.comments}
                         />
                         <TextField
-                            fullWidth margin="dense" autoComplete="off"
-                            multiline minRows={4}
-                            label="Detailed Description"
-                            name="detailedDescription"
-                            value={formik.values.detailedDescription}
+                            fullWidth
+                            margin="dense"
+                            label="Time Available"
+                            type="time"
+                            name="timeAvailable"
+                            value={formik.values.timeAvailable}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.detailedDescription && Boolean(formik.errors.detailedDescription)}
-                            helperText={formik.touched.detailedDescription && formik.errors.detailedDescription}
+                            error={formik.touched.timeAvailable && Boolean(formik.errors.timeAvailable)}
+                            helperText={formik.touched.timeAvailable && formik.errors.timeAvailable}
+                            inputProps={{ step: 300 }}
+                        />
+                        <TextField
+                            fullWidth
+                            margin="dense"
+                            label="Duration (in hours)"
+                            type="number"
+                            name="duration"
+                            value={formik.values.duration}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.duration && Boolean(formik.errors.duration)}
+                            helperText={formik.touched.duration && formik.errors.duration}
+                        />
+                        <TextField
+                            fullWidth
+                            margin="dense"
+                            label="Contact Info"
+                            name="contactInfo"
+                            value={formik.values.contactInfo}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.contactInfo && Boolean(formik.errors.contactInfo)}
+                            helperText={formik.touched.contactInfo && formik.errors.contactInfo}
                         />
                     </Grid>
                     <Grid item xs={12} md={6} lg={4}>

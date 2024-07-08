@@ -52,7 +52,7 @@ function Volunteers() {
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Volunteers
+                Volunteer Events
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -86,10 +86,10 @@ function Volunteers() {
                             <Grid item xs={12} md={6} lg={4} key={volunteer.id}>
                                 <Card>
                                     {
-                                        volunteer.imageFile && (
+                                        volunteer.uploadPhoto && (
                                             <Box className="aspect-ratio-container">
                                                 <img alt="volunteer"
-                                                    src={`${import.meta.env.VITE_FILE_BASE_URL}${volunteer.imageFile}`}>
+                                                    src={`${import.meta.env.VITE_FILE_BASE_URL}${volunteer.uploadPhoto}`}>
                                                 </img>
                                             </Box>
                                         )
@@ -128,15 +128,12 @@ function Volunteers() {
                                                 </Typography>
                                             )}
                                         </Box>
-                                      
-
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                             <Event sx={{ mr: 1 }} />
                                             <Typography>
                                                 {dayjs(volunteer.date).format('DD MMM YYYY')}
                                             </Typography>
                                         </Box>
-
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
                                             color="text.secondary">
                                             <LocationOn sx={{ mr: 1 }} />
