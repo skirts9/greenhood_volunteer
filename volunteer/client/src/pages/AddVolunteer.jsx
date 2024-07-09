@@ -15,20 +15,20 @@ function AddVolunteer() {
 
     const formik = useFormik({
         initialValues: {
-          dateAvailable: '',
-          serviceType: '',
-          comments: '',
-          timeAvailable: '',
-          duration: '',
-          contactInfo: '',
+            dateAvailable: '',
+            serviceType: '',
+            comments: '',
+            timeAvailable: '',
+            duration: '',
+            contactInfo: '',
         },
         validationSchema: yup.object({
-          dateAvailable: yup.date().required('Date Available is required'),
-          serviceType: yup.string().required('Service Type is required'),
-          comments: yup.string().max(500, 'Comments must be at most 500 characters'),
-          timeAvailable: yup.string().matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid Time format').required('Time Available is required'),
-          duration: yup.number().integer().min(0, 'Duration must be at least 0').nullable(),
-          contactInfo: yup.string().max(100, 'Contact Info must be at most 100 characters').nullable(),
+            dateAvailable: yup.date().required('Date Available is required'),
+            serviceType: yup.string().required('Service Type is required'),
+            comments: yup.string().max(500, 'Comments must be at most 500 characters'),
+            timeAvailable: yup.string().matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid Time format').required('Time Available is required'),
+            duration: yup.number().integer().min(0, 'Duration must be at least 0').nullable(),
+            contactInfo: yup.string().max(100, 'Contact Info must be at most 100 characters').nullable(),
         }),
         onSubmit: (data) => {
             if (imageFile) {
@@ -45,7 +45,7 @@ function AddVolunteer() {
                 })
                 .catch((err) => {
                     console.log(err.response);
-                    toast.error('Failed to add event!');
+                    toast.error('Failed to add volunteer!');
                 });
         }
     });
@@ -77,10 +77,10 @@ function AddVolunteer() {
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Add volunteer
+                Add Volunteer
             </Typography>
             <Box component="form" onSubmit={formik.handleSubmit}>
-            <Grid container spacing={2}>
+                <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                         <TextField
                             fullWidth

@@ -49,9 +49,9 @@ function EditVolunteer() {
         .max(100, 'Service Type must be at most 100 characters')
         .required('Service Type is required'),
       comments: yup.string().trim().max(500, 'Comments must be at most 500 characters'),
-      timeAvailable: yup.string().trim().required('Time Available is required'),
-      duration: yup.string().trim().required('Duration is required'),
-      contactInfo: yup.string().trim().required('Contact Info is required')
+      timeAvailable: yup.string().matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid Time format').required('Time Available is required'),
+      duration: yup.number().integer().min(0, 'Duration must be at least 0').nullable(),
+      contactInfo: yup.string().max(100, 'Contact Info must be at most 100 characters').nullable(),
     }),
     onSubmit: (data) => {
       if (imageFile) {
@@ -60,7 +60,7 @@ function EditVolunteer() {
       data.serviceType = data.serviceType.trim();
       data.timeAvailable = data.timeAvailable.trim();
       data.comments = data.comments.trim();
-      data.duration = data.duration.trim();
+      data.duration = data.duration ? parseInt(data.duration) : null;
       data.contactInfo = data.contactInfo.trim();
       http.put(`/tickets/${id}`, data)
         .then((res) => {
@@ -94,7 +94,7 @@ function EditVolunteer() {
         console.error('There was an error deleting the ticket!', error);
         toast.error('Error deleting ticket');
       });
-  }
+  };
 
   const onFileChange = (e) => {
     let file = e.target.files[0];
@@ -118,10 +118,6 @@ function EditVolunteer() {
           console.log(error.response);
         });
     }
-  };
-
-  const formatTime = (time) => {
-    return dayjs(time, "HH:mm:ss").format("HH:mm");
   };
 
   return (

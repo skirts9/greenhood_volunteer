@@ -5,36 +5,41 @@ const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 
+// Create a new volunteer event
 router.post("/", validateToken, async (req, res) => {
   let data = req.body;
   data.userId = req.user.id;
+
   // Validate request body
   let validationSchema = yup.object({
     title: yup.string().trim().min(3).max(100).required(),
     location: yup.string().trim().min(3).max(100).required(),
-    date: yup.date().required(),
-    time: yup.string().trim().required(), // Use yup.string() for time validation
-    briefDescription: yup.string().trim().max(500), // Corrected spelling
-    detailedDescription: yup.string().trim().max(1000)
+    dateAvailable: yup.date().required(),
+    timeAvailable: yup.string().matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid Time format').required(),
+    serviceType: yup.string().trim().max(100).required(),
+    comments: yup.string().trim().max(500).required(),
+    duration: yup.number().integer().min(0).nullable(),
+    contactInfo: yup.string().trim().max(100).nullable(),
+    photoPath: yup.string().trim().max(255).nullable(),
   });
 
   try {
     data = await validationSchema.validate(data, { abortEarly: false });
     let result = await Volunteer.create(data);
     res.json(result);
-  }
-  catch (err) {
+  } catch (err) {
     res.status(400).json({ errors: err.errors });
   }
 });
 
+// Get all volunteer events
 router.get("/", async (req, res) => {
   let condition = {};
   let search = req.query.search;
   if (search) {
     condition[Op.or] = [
       { title: { [Op.like]: `%${search}%` } },
-      { description: { [Op.like]: `%${search}%` } }
+      { comments: { [Op.like]: `%${search}%` } }
     ];
   }
   // You can add condition for other columns here
@@ -48,6 +53,7 @@ router.get("/", async (req, res) => {
   res.json(list);
 });
 
+// Get a single volunteer event by ID
 router.get("/:id", async (req, res) => {
   let id = req.params.id;
   let volunteer = await Volunteer.findByPk(id, {
@@ -61,6 +67,7 @@ router.get("/:id", async (req, res) => {
   res.json(volunteer);
 });
 
+// Update a volunteer event
 router.put("/:id", validateToken, async (req, res) => {
   let id = req.params.id;
   // Check if id not found
@@ -86,14 +93,11 @@ router.put("/:id", validateToken, async (req, res) => {
     timeAvailable: yup.string().matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid Time format').required('Time Available is required'),
     duration: yup.number().integer().min(0, 'Duration must be at least 0').nullable(),
     contactInfo: yup.string().max(100, 'Contact Info must be at most 100 characters').nullable(),
+    photoPath: yup.string().max(255).nullable(),
   });
 
   try {
     data = await validationSchema.validate(data, { abortEarly: false });
-
-    // Log time data after validation
-
-
     let num = await Volunteer.update(data, {
       where: { id: id }
     });
@@ -101,18 +105,17 @@ router.put("/:id", validateToken, async (req, res) => {
       res.json({
         message: "Volunteer was updated successfully."
       });
-    }
-    else {
+    } else {
       res.status(400).json({
         message: `Cannot update volunteer with id ${id}.`
       });
     }
-  }
-  catch (err) {
+  } catch (err) {
     res.status(400).json({ errors: err.errors });
   }
 });
 
+// Delete a volunteer event
 router.delete("/:id", validateToken, async (req, res) => {
   let id = req.params.id;
   // Check if id not found
@@ -136,8 +139,7 @@ router.delete("/:id", validateToken, async (req, res) => {
     res.json({
       message: "Volunteer was deleted successfully."
     });
-  }
-  else {
+  } else {
     res.status(400).json({
       message: `Cannot delete volunteer with id ${id}.`
     });
